@@ -38,6 +38,7 @@ About Terraform.tf :
 I wrote a Terraform script to define the AWS resources used in this project. The script provisions the Kinesis stream, S3 bucket, Lambda functions, Glue crawler, Athena workgroup, Step Functions workflow, and CloudWatch monitoring components. The main reason for writing this script was to practice Infrastructure as Code (IaC). While I initially created many resources manually to understand how each service works, I captured them in Terraform so the entire setup can be reproduced consistently in the future with a single command. This reduces manual effort, avoids configuration drift, and demonstrates how real-world data pipelines are deployed and managed at scale.
 
 Repo structure:
+
 ingest_weather.py – script to fetch weather data and send it to Kinesis.
 lambda.py – Lambda code to transform records and store them in S3.
 stepfunction.json – Step Functions definition for orchestrating the pipeline.
