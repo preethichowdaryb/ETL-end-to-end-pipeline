@@ -1,0 +1,37 @@
+{
+  "Comment": "Weather pipeline workflow: Lambda -> Glue -> Athena",
+  "StartAt": "TransformLambda",
+  "States": {
+    "TransformLambda": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "OutputPath": "$.Payload",
+      "Parameters": {
+        "FunctionName": "weather-transform-to-s3"
+      },
+      "Next": "StartGlueCrawler"
+    },
+    "StartGlueCrawler": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::aws-sdk:glue:startCrawler",
+      "Parameters": {
+        "Name": "weather_curated_crawler"
+      },
+      "Next": "RunAthenaQuery"
+    },
+    "RunAthenaQuery": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::athena:startQueryExecution.sync",
+      "Parameters": {
+        "QueryString": "SELECT location, temp_c, humidity, condition, lambda_ts FROM transformedweatherapi LIMIT 10;",
+        "QueryExecutionContext": {
+          "Database": "weather_db"
+        },
+        "ResultConfiguration": {
+          "OutputLocation": "s3://transformedweatherapi/athena-results/"
+        }
+      },
+      "End": true
+    }
+  }
+}
